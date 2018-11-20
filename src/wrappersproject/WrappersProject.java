@@ -18,6 +18,7 @@ public class WrappersProject {
     
     public static void Firefox()
     {
+        
         String exePath = "/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver";
         System.setProperty("webdriver.gecko.driver", exePath);
         driver = new FirefoxDriver();
