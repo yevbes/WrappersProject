@@ -5,17 +5,30 @@
  */
 package design;
 
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import wrappersproject.WrappersProject;
+
 /**
  *
  * @author yevbes
  */
 public class WrappersFrame extends javax.swing.JFrame {
 
+    private WrappersProject wp;
+    private boolean isAmazonChecked = false, isFnacChecked = false;
+
     /**
      * Creates new form WrappersFrame
      */
     public WrappersFrame() {
         initComponents();
+        wp = new WrappersProject("/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver");
     }
 
     /**
@@ -33,9 +46,10 @@ public class WrappersFrame extends javax.swing.JFrame {
         jTextFieldTitulo = new javax.swing.JTextField();
         jTextFieldAutor = new javax.swing.JTextField();
         jCheckBoxAmazon = new javax.swing.JCheckBox();
-        jCheckBoxElCorteIngles = new javax.swing.JCheckBox();
         jCheckBoxFnac = new javax.swing.JCheckBox();
         jButtonBuscar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Búsqueda de libros");
@@ -45,6 +59,12 @@ public class WrappersFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Autor");
 
+        jTextFieldTitulo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldTituloActionPerformed(evt);
+            }
+        });
+
         jTextFieldAutor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldAutorActionPerformed(evt);
@@ -52,21 +72,59 @@ public class WrappersFrame extends javax.swing.JFrame {
         });
 
         jCheckBoxAmazon.setText("Amazon");
-
-        jCheckBoxElCorteIngles.setText("El Corte Inglés");
+        jCheckBoxAmazon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxAmazonActionPerformed(evt);
+            }
+        });
 
         jCheckBoxFnac.setText("Fnac");
+        jCheckBoxFnac.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxFnacActionPerformed(evt);
+            }
+        });
 
         jButtonBuscar.setText("Buscar");
+        jButtonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBuscarActionPerformed(evt);
+            }
+        });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Sitio de búsqueda", "Título", "Autor", "Precio", "Descuento"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(64, 64, 64)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
@@ -74,42 +132,43 @@ public class WrappersFrame extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextFieldTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextFieldAutor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jCheckBoxElCorteIngles)
-                            .addComponent(jCheckBoxAmazon, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxFnac, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonBuscar, javax.swing.GroupLayout.Alignment.LEADING))))
-                .addContainerGap(101, Short.MAX_VALUE))
+                    .addComponent(jCheckBoxAmazon)
+                    .addComponent(jButtonBuscar)
+                    .addComponent(jCheckBoxFnac))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 582, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextFieldTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldAutor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
-                .addComponent(jCheckBoxAmazon)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxElCorteIngles)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxFnac)
-                .addGap(18, 18, 18)
-                .addComponent(jButtonBuscar)
-                .addGap(30, 30, 30))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jTextFieldTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldAutor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
+                        .addComponent(jCheckBoxFnac)
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBoxAmazon)
+                        .addGap(28, 28, 28)
+                        .addComponent(jButtonBuscar))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -122,6 +181,84 @@ public class WrappersFrame extends javax.swing.JFrame {
     private void jTextFieldAutorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldAutorActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldAutorActionPerformed
+
+    private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
+        String autor = jTextFieldAutor.getText();
+        String titulo = jTextFieldTitulo.getText();
+        WebDriver driver = wp.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        if (isAmazonChecked && isFnacChecked) {
+
+        } else if (isAmazonChecked) {
+            // Sitio de búsqueda, el titulo, nombre autor, precio, descuento si existe
+            // Si no existe el libro, 1a fila todo x
+            driver.get("http://www.amazon.es");
+            driver.manage().window().maximize();
+            // searchDropdownBox
+            WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[1]/div/select/option[25]"));
+            if (searchDropdownBox != null) {
+                searchDropdownBox.click();
+                WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
+                if (searchInput != null) {
+                    searchInput.sendKeys(titulo + " " + autor);
+                    WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
+                    if (searchBtn != null) {
+                        searchBtn.click();
+                        // Nombre del espacio web Amazon
+                        // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
+                        // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
+                        // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
+                        // Descuento NO HAY 
+                        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+                        List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div"));
+                        if (listaLibros != null) {
+                            WebElement tituloElem, autorElem, precioElem;
+                            Object[] row = new Object[5];
+                            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                            if (!listaLibros.isEmpty()) {
+                                for (int i = 0; i < listaLibros.size(); i++) {
+                                    tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
+                                    autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]"));
+                                    precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]"));
+                                    row[0] = "Amazon";
+                                    row[1] = tituloElem.getText();
+                                    row[2] = autorElem.getText();
+                                    row[3] = precioElem.getText();
+                                    row[4] = "x";
+                                    model.addRow(row);
+                                }
+                            } else {
+                                row[0] = "x";
+                                row[1] = "x";
+                                row[2] = "x";
+                                row[3] = "x";
+                                row[4] = "x";
+                                model.addRow(row);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else if (isFnacChecked) {
+
+        }
+
+
+    }//GEN-LAST:event_jButtonBuscarActionPerformed
+
+    private void jTextFieldTituloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTituloActionPerformed
+    }//GEN-LAST:event_jTextFieldTituloActionPerformed
+
+    private void jCheckBoxAmazonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxAmazonActionPerformed
+        isAmazonChecked = !isAmazonChecked;
+    }//GEN-LAST:event_jCheckBoxAmazonActionPerformed
+
+    private void jCheckBoxFnacActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxFnacActionPerformed
+        isFnacChecked = !isFnacChecked;
+    }//GEN-LAST:event_jCheckBoxFnacActionPerformed
 
     /**
      * @param args the command line arguments
@@ -161,11 +298,12 @@ public class WrappersFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBuscar;
     private javax.swing.JCheckBox jCheckBoxAmazon;
-    private javax.swing.JCheckBox jCheckBoxElCorteIngles;
     private javax.swing.JCheckBox jCheckBoxFnac;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextFieldAutor;
     private javax.swing.JTextField jTextFieldTitulo;
     // End of variables declaration//GEN-END:variables
