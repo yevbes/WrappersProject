@@ -183,67 +183,19 @@ public class WrappersFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldAutorActionPerformed
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
+        clearTable();
         String autor = jTextFieldAutor.getText();
         String titulo = jTextFieldTitulo.getText();
         WebDriver driver = wp.getDriver();
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
         if (isAmazonChecked && isFnacChecked) {
-
+            amazonSearch(driver, autor, titulo, wait);
+            fnacSearch(driver, autor, titulo, wait);
         } else if (isAmazonChecked) {
-            // Sitio de búsqueda, el titulo, nombre autor, precio, descuento si existe
-            // Si no existe el libro, 1a fila todo x
-            driver.get("http://www.amazon.es");
-            driver.manage().window().maximize();
-            // searchDropdownBox
-            WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[1]/div/select/option[25]"));
-            if (searchDropdownBox != null) {
-                searchDropdownBox.click();
-                WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
-                if (searchInput != null) {
-                    searchInput.sendKeys(titulo + " " + autor);
-                    WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
-                    if (searchBtn != null) {
-                        searchBtn.click();
-                        // Nombre del espacio web Amazon
-                        // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
-                        // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
-                        // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
-                        // Descuento NO HAY 
-                        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
-                        List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div"));
-                        if (listaLibros != null) {
-                            WebElement tituloElem, autorElem, precioElem;
-                            Object[] row = new Object[5];
-                            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-
-                            if (!listaLibros.isEmpty()) {
-                                for (int i = 0; i < listaLibros.size(); i++) {
-                                    tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
-                                    autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]"));
-                                    precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]"));
-                                    row[0] = "Amazon";
-                                    row[1] = tituloElem.getText();
-                                    row[2] = autorElem.getText();
-                                    row[3] = precioElem.getText();
-                                    row[4] = "x";
-                                    model.addRow(row);
-                                }
-                            } else {
-                                row[0] = "x";
-                                row[1] = "x";
-                                row[2] = "x";
-                                row[3] = "x";
-                                row[4] = "x";
-                                model.addRow(row);
-                            }
-                        }
-                    }
-                }
-            }
-
+            amazonSearch(driver, autor, titulo, wait);
         } else if (isFnacChecked) {
-
+            fnacSearch(driver, autor, titulo, wait);
         }
 
 
@@ -307,4 +259,205 @@ public class WrappersFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldAutor;
     private javax.swing.JTextField jTextFieldTitulo;
     // End of variables declaration//GEN-END:variables
+
+    private void clearTable() {
+        DefaultTableModel dm = (DefaultTableModel) jTable1.getModel();
+        dm.setRowCount(0);
+    }
+
+    private void amazonSearch(WebDriver driver, String autor, String titulo, WebDriverWait wait) {
+        // Sitio de búsqueda, el titulo, nombre autor, precio, descuento si existe
+        // Si no existe el libro, 1a fila todo x
+        driver.get("http://www.amazon.es");
+        driver.manage().window().maximize();
+        // searchDropdownBox
+        WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[1]/div/select/option[25]"));
+        if (searchDropdownBox != null) {
+            searchDropdownBox.click();
+            WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
+            if (searchInput != null) {
+                searchInput.sendKeys(titulo + " " + autor);
+                WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
+                if (searchBtn != null) {
+                    searchBtn.click();
+                    // Nombre del espacio web Amazon
+                    // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
+                    // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
+                    // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
+                    // Descuento NO HAY 
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+                    List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
+                    //List<WebElement> listaLibros = driver.findElements(By.className("s-result-item"));
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
+
+                    if (listaLibros != null) {
+                        WebElement tituloElem, autorElem, precioElem;
+                        Object[] row = new Object[5];
+                        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                        if (!listaLibros.isEmpty()) {
+                            int count = 1;
+
+                            for (int i = 0; i < listaLibros.size(); i++) {
+                                try {
+                                    tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
+                                } catch (Exception e) {
+                                    tituloElem = null;
+                                }
+                                try {
+
+                                    autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[2]/span[2]"));
+                                } catch (Exception e) {
+                                    autorElem = null;
+                                }
+                                try {
+                                    precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]"));
+                                } catch (Exception e) {
+                                    precioElem = null;
+                                }
+                                row[0] = "Amazon";
+
+                                if (tituloElem != null) {
+                                    row[1] = tituloElem.getText();
+                                } else {
+                                    row[1] = "x";
+                                }
+
+                                if (autorElem != null) {
+                                    row[2] = autorElem.getText();
+                                } else {
+                                    row[2] = "x";
+                                }
+
+                                if (precioElem != null) {
+                                    row[3] = precioElem.getText();
+                                } else {
+                                    row[3] = "x";
+                                }
+
+                                row[4] = "x";
+                                model.addRow(row);
+                                count++;
+                            }
+                        } else {
+                            row[0] = "x";
+                            row[1] = "x";
+                            row[2] = "x";
+                            row[3] = "x";
+                            row[4] = "x";
+                            model.addRow(row);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void fnacSearch(WebDriver driver, String autor, String titulo, WebDriverWait wait) {
+        driver.get("http://www.fnac.es/");
+        driver.manage().window().maximize();
+
+        WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[1]/div/a"));
+        if (searchDropdownBox != null) {
+            searchDropdownBox.click();
+
+            WebElement searchDropdownItem = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[8]/div/div/ul/li[2]")));
+            //driver.findElement(By.xpath("/html/body/div[8]/div/div/ul/li[2]"));
+            if (searchDropdownItem != null) {
+                searchDropdownItem.click();
+                WebElement searchInput
+                        = //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\\\"Fnac_Search\\\"]")));
+                        driver.findElement(By.xpath("//*[@id=\"Fnac_Search\"]"));
+                if (searchInput != null) {
+                    searchInput.sendKeys(titulo + " " + autor);
+                    WebElement searchBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button")));
+                    //driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
+                    if (searchBtn != null) {
+                        searchBtn.click();
+                        // Nombre del espacio web Amazon
+                        // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
+                        // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
+                        // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
+                        // Descuento NO HAY 
+                        List<WebElement> listaLibros = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[4]/div/div[6]/ul/li")));
+                        //driver.findElements(By.xpath("/html/body/div[4]/div/div[6]/ul/li"));
+
+                        if (listaLibros != null) {
+                            WebElement tituloElem, autorElem, precioElem, discountElem;
+                            Object[] row = new Object[5];
+                            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                            if (!listaLibros.isEmpty()) {
+                                int count = 1;
+
+                                for (int i = 0; i < listaLibros.size(); i++) {
+
+                                    try {
+                                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                                    } catch (Exception e) {
+                                        tituloElem = null;
+                                    }
+                                    try {
+                                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
+                                    } catch (Exception e) {
+                                        autorElem = null;
+                                    }
+                                    try {
+                                        precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/a"));
+                                    } catch (Exception e) {
+                                        precioElem = null;
+                                    }
+                                    try {
+                                        discountElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/span"));
+                                    } catch (Exception e) {
+                                        discountElem = null;
+                                    }
+
+                                    row[0] = "Fnac";
+                                    row[1] = tituloElem.getText();
+
+                                    if (tituloElem != null) {
+                                        row[1] = tituloElem.getText();
+                                    } else {
+                                        row[1] = "x";
+                                    }
+
+                                    if (autorElem != null) {
+                                        row[2] = autorElem.getText();
+                                    } else {
+                                        row[2] = "x";
+                                    }
+
+                                    row[3] = precioElem.getText();
+
+                                    if (precioElem != null) {
+                                        row[3] = precioElem.getText();
+                                    } else {
+                                        row[3] = "x";
+                                    }
+
+                                    if (discountElem != null) {
+                                        row[4] = discountElem.getText();
+                                    } else {
+                                        row[4] = "x";
+                                    }
+
+                                    model.addRow(row);
+                                    count++;
+                                }
+                            } else {
+                                row[0] = "x";
+                                row[1] = "x";
+                                row[2] = "x";
+                                row[3] = "x";
+                                row[4] = "x";
+                                model.addRow(row);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
