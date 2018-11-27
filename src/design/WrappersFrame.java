@@ -5,6 +5,8 @@
  */
 package design;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import org.openqa.selenium.By;
@@ -287,9 +289,13 @@ public class WrappersFrame extends javax.swing.JFrame {
                     // Descuento NO HAY 
                     wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
                     List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
-                    //List<WebElement> listaLibros = driver.findElements(By.className("s-result-item"));
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
+                    //= wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("s-result-item celwidget")));
+                    //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
+//wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.id("s-results-list-atf")));
+//driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
 
+//List<WebElement> listaLibros = driver.findElements(By.className("s-result-item"));
+                    // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
                     if (listaLibros != null) {
                         WebElement tituloElem, autorElem, precioElem;
                         Object[] row = new Object[5];
@@ -354,6 +360,25 @@ public class WrappersFrame extends javax.swing.JFrame {
 
     }
 
+    public String method(String str) {
+        if (str.charAt(str.length() - 1) == '€') {
+            str = str.replace(str.substring(str.length() - 1), "");
+            return str;
+        } else {
+            return str;
+        }
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     private void fnacSearch(WebDriver driver, String autor, String titulo, WebDriverWait wait) {
         driver.get("http://www.fnac.es/");
         driver.manage().window().maximize();
@@ -362,8 +387,9 @@ public class WrappersFrame extends javax.swing.JFrame {
         if (searchDropdownBox != null) {
             searchDropdownBox.click();
 
-            WebElement searchDropdownItem = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[8]/div/div/ul/li[2]")));
-            //driver.findElement(By.xpath("/html/body/div[8]/div/div/ul/li[2]"));
+            WebElement searchDropdownItem
+                    = //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[8]/div/div/ul/li[2]")));
+                    driver.findElement(By.xpath("/html/body/div[8]/div/div/ul/li[2]"));
             if (searchDropdownItem != null) {
                 searchDropdownItem.click();
                 WebElement searchInput
@@ -371,8 +397,9 @@ public class WrappersFrame extends javax.swing.JFrame {
                         driver.findElement(By.xpath("//*[@id=\"Fnac_Search\"]"));
                 if (searchInput != null) {
                     searchInput.sendKeys(titulo + " " + autor);
-                    WebElement searchBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button")));
-                    //driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
+                    WebElement searchBtn
+                            = //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button")));
+                            driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
                     if (searchBtn != null) {
                         searchBtn.click();
                         // Nombre del espacio web Amazon
@@ -380,9 +407,12 @@ public class WrappersFrame extends javax.swing.JFrame {
                         // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
                         // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
                         // Descuento NO HAY 
-                        List<WebElement> listaLibros = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[4]/div/div[6]/ul/li")));
+                        //List<WebElement> listaLibros = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[4]/div/div[6]/ul/li")));
                         //driver.findElements(By.xpath("/html/body/div[4]/div/div[6]/ul/li"));
-
+                        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+                        List<WebElement> listaLibros
+                                = //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("Article-item")));
+                                driver.findElements(By.className("Article-item"));
                         if (listaLibros != null) {
                             WebElement tituloElem, autorElem, precioElem, discountElem;
                             Object[] row = new Object[5];
@@ -394,28 +424,28 @@ public class WrappersFrame extends javax.swing.JFrame {
                                 for (int i = 0; i < listaLibros.size(); i++) {
 
                                     try {
-                                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                                        tituloElem = listaLibros.get(i).//findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                                                findElement(By.className("js-minifa-title"));
                                     } catch (Exception e) {
                                         tituloElem = null;
                                     }
                                     try {
-                                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
+                                        autorElem = listaLibros.get(i).findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
                                     } catch (Exception e) {
                                         autorElem = null;
                                     }
                                     try {
-                                        precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/a"));
+                                        precioElem = listaLibros.get(i).findElement(By.className("userPrice"));
                                     } catch (Exception e) {
                                         precioElem = null;
                                     }
                                     try {
-                                        discountElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/span"));
+                                        discountElem = listaLibros.get(i).findElement(By.className("oldPrice"));
                                     } catch (Exception e) {
                                         discountElem = null;
                                     }
 
                                     row[0] = "Fnac";
-                                    row[1] = tituloElem.getText();
 
                                     if (tituloElem != null) {
                                         row[1] = tituloElem.getText();
@@ -429,8 +459,6 @@ public class WrappersFrame extends javax.swing.JFrame {
                                         row[2] = "x";
                                     }
 
-                                    row[3] = precioElem.getText();
-
                                     if (precioElem != null) {
                                         row[3] = precioElem.getText();
                                     } else {
@@ -438,7 +466,10 @@ public class WrappersFrame extends javax.swing.JFrame {
                                     }
 
                                     if (discountElem != null) {
-                                        row[4] = discountElem.getText();
+                                        double precioReal = Double.parseDouble(method(discountElem.getText().trim()).replaceAll(",", "."));
+                                        double precioDescuento = Double.parseDouble(method(precioElem.getText().trim()).replaceAll(",", "."));
+                                        double descuento = precioReal - precioDescuento;
+                                        row[4] = "" + round(descuento,2)+"€";
                                     } else {
                                         row[4] = "x";
                                     }
