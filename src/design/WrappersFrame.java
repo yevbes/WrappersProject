@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -282,76 +283,27 @@ public class WrappersFrame extends javax.swing.JFrame {
                 WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
                 if (searchBtn != null) {
                     searchBtn.click();
-                    // Nombre del espacio web Amazon
-                    // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
-                    // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
-                    // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
-                    // Descuento NO HAY 
-                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
-                    List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
-                    //= wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("s-result-item celwidget")));
-                    //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
-//wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.id("s-results-list-atf")));
-//driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
-
-//List<WebElement> listaLibros = driver.findElements(By.className("s-result-item"));
-                    // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li")));
-                    if (listaLibros != null) {
-                        WebElement tituloElem, autorElem, precioElem;
-                        Object[] row = new Object[5];
-                        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-
-                        if (!listaLibros.isEmpty()) {
-                            int count = 1;
-
-                            for (int i = 0; i < listaLibros.size(); i++) {
-                                try {
-                                    tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
-                                } catch (Exception e) {
-                                    tituloElem = null;
-                                }
-                                try {
-
-                                    autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[2]/span[2]"));
-                                } catch (Exception e) {
-                                    autorElem = null;
-                                }
-                                try {
-                                    precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]"));
-                                } catch (Exception e) {
-                                    precioElem = null;
-                                }
-                                row[0] = "Amazon";
-
-                                if (tituloElem != null) {
-                                    row[1] = tituloElem.getText();
-                                } else {
-                                    row[1] = "x";
-                                }
-
-                                if (autorElem != null) {
-                                    row[2] = autorElem.getText();
-                                } else {
-                                    row[2] = "x";
-                                }
-
-                                if (precioElem != null) {
-                                    row[3] = precioElem.getText();
-                                } else {
-                                    row[3] = "x";
-                                }
-
-                                row[4] = "x";
-                                model.addRow(row);
-                                count++;
+                    /* Numero de paginaciónes, hay que conseguir listarlas */
+                    WebElement numOfNav = driver.findElement(By.className("pagnDisabled")); 
+                    if (numOfNav != null) {
+                        int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
+                        // Para cada página de paginación
+                        for (int i = 0; i < numOfNavs; i++) {
+                            fetchAmazonBooks(driver, wait); //El método coge la info de los articulos y rellena la tabla                           
+                            JavascriptExecutor js = ((JavascriptExecutor) driver);
+                            //presence in DOM
+                            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextLink")));
+                            //scrolling
+                            WebElement element = driver.findElement(By.id("pagnNextLink"));
+                            js.executeScript("arguments[0].scrollIntoView(true);", element);
+                            //clickable
+                            WebElement nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextLink")));
+                                    //driver.findElement(By.id("//*[@id='pagnNextLink']"));
+                            //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
+                            if (nextBtn != null && i != numOfNavs-1) {
+                                nextBtn.click();
                             }
-                        } else {
-                            row[0] = "x";
-                            row[1] = "x";
-                            row[2] = "x";
-                            row[3] = "x";
-                            row[4] = "x";
-                            model.addRow(row);
+                        
                         }
                     }
                 }
@@ -402,92 +354,155 @@ public class WrappersFrame extends javax.swing.JFrame {
                             driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
                     if (searchBtn != null) {
                         searchBtn.click();
-                        // Nombre del espacio web Amazon
-                        // Titulo /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/a/h2
-                        // Autor Nombre /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[2]/span[2]/a
-                        // Precio /html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[1]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]
-                        // Descuento NO HAY 
-                        //List<WebElement> listaLibros = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("/html/body/div[4]/div/div[6]/ul/li")));
-                        //driver.findElements(By.xpath("/html/body/div[4]/div/div[6]/ul/li"));
-                        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
-                        List<WebElement> listaLibros
-                                = //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("Article-item")));
-                                driver.findElements(By.className("Article-item"));
-                        if (listaLibros != null) {
-                            WebElement tituloElem, autorElem, precioElem, discountElem;
-                            Object[] row = new Object[5];
-                            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
 
-                            if (!listaLibros.isEmpty()) {
-                                int count = 1;
+                        fetchFnackBooks(driver, wait);
 
-                                for (int i = 0; i < listaLibros.size(); i++) {
-
-                                    try {
-                                        tituloElem = listaLibros.get(i).//findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
-                                                findElement(By.className("js-minifa-title"));
-                                    } catch (Exception e) {
-                                        tituloElem = null;
-                                    }
-                                    try {
-                                        autorElem = listaLibros.get(i).findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
-                                    } catch (Exception e) {
-                                        autorElem = null;
-                                    }
-                                    try {
-                                        precioElem = listaLibros.get(i).findElement(By.className("userPrice"));
-                                    } catch (Exception e) {
-                                        precioElem = null;
-                                    }
-                                    try {
-                                        discountElem = listaLibros.get(i).findElement(By.className("oldPrice"));
-                                    } catch (Exception e) {
-                                        discountElem = null;
-                                    }
-
-                                    row[0] = "Fnac";
-
-                                    if (tituloElem != null) {
-                                        row[1] = tituloElem.getText();
-                                    } else {
-                                        row[1] = "x";
-                                    }
-
-                                    if (autorElem != null) {
-                                        row[2] = autorElem.getText();
-                                    } else {
-                                        row[2] = "x";
-                                    }
-
-                                    if (precioElem != null) {
-                                        row[3] = precioElem.getText();
-                                    } else {
-                                        row[3] = "x";
-                                    }
-
-                                    if (discountElem != null) {
-                                        double precioReal = Double.parseDouble(method(discountElem.getText().trim()).replaceAll(",", "."));
-                                        double precioDescuento = Double.parseDouble(method(precioElem.getText().trim()).replaceAll(",", "."));
-                                        double descuento = precioReal - precioDescuento;
-                                        row[4] = "" + round(descuento,2)+"€";
-                                    } else {
-                                        row[4] = "x";
-                                    }
-
-                                    model.addRow(row);
-                                    count++;
-                                }
-                            } else {
-                                row[0] = "x";
-                                row[1] = "x";
-                                row[2] = "x";
-                                row[3] = "x";
-                                row[4] = "x";
-                                model.addRow(row);
-                            }
-                        }
                     }
                 }
+            }
+        }
+    }
+
+    private void fetchAmazonBooks(WebDriver driver, WebDriverWait wait) {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+        List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
+
+        if (listaLibros != null) {
+            WebElement tituloElem, autorElem, precioElem;
+            Object[] row = new Object[5];
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+            if (!listaLibros.isEmpty()) {
+                int count = 1;
+
+                for (int i = 0; i < listaLibros.size(); i++) {
+                    try {
+                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
+                    } catch (Exception e) {
+                        tituloElem = null;
+                    }
+                    try {
+
+                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[2]/span[2]"));
+                    } catch (Exception e) {
+                        autorElem = null;
+                    }
+                    try {
+                        precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[2]/div[1]/div[2]/a/span[2]"));
+                    } catch (Exception e) {
+                        precioElem = null;
+                    }
+                    row[0] = "Amazon";
+
+                    if (tituloElem != null) {
+                        row[1] = tituloElem.getText();
+                    } else {
+                        row[1] = "x";
+                    }
+
+                    if (autorElem != null) {
+                        row[2] = autorElem.getText();
+                    } else {
+                        row[2] = "x";
+                    }
+
+                    if (precioElem != null) {
+                        row[3] = precioElem.getText();
+                    } else {
+                        row[3] = "x";
+                    }
+
+                    row[4] = "x";
+                    model.addRow(row);
+                    count++;
+                }
+            } else {
+                row[0] = "x";
+                row[1] = "x";
+                row[2] = "x";
+                row[3] = "x";
+                row[4] = "x";
+                model.addRow(row);
+            }
+        }
+    }
+
+    private void fetchFnackBooks(WebDriver driver, WebDriverWait wait) {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+        List<WebElement> listaLibros
+                = //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("Article-item")));
+                driver.findElements(By.className("Article-item"));
+        if (listaLibros != null) {
+            WebElement tituloElem, autorElem, precioElem, discountElem;
+            Object[] row = new Object[5];
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+            if (!listaLibros.isEmpty()) {
+                int count = 1;
+
+                for (int i = 0; i < listaLibros.size(); i++) {
+
+                    try {
+                        tituloElem = listaLibros.get(i).//findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                                findElement(By.className("js-minifa-title"));
+                    } catch (Exception e) {
+                        tituloElem = null;
+                    }
+                    try {
+                        autorElem = listaLibros.get(i).findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
+                    } catch (Exception e) {
+                        autorElem = null;
+                    }
+                    try {
+                        precioElem = listaLibros.get(i).findElement(By.className("userPrice"));
+                    } catch (Exception e) {
+                        precioElem = null;
+                    }
+                    try {
+                        discountElem = listaLibros.get(i).findElement(By.className("oldPrice"));
+                    } catch (Exception e) {
+                        discountElem = null;
+                    }
+
+                    row[0] = "Fnac";
+
+                    if (tituloElem != null) {
+                        row[1] = tituloElem.getText();
+                    } else {
+                        row[1] = "x";
+                    }
+
+                    if (autorElem != null) {
+                        row[2] = autorElem.getText();
+                    } else {
+                        row[2] = "x";
+                    }
+
+                    if (precioElem != null) {
+                        row[3] = precioElem.getText();
+                    } else {
+                        row[3] = "x";
+                    }
+
+                    if (discountElem != null) {
+                        double precioReal = Double.parseDouble(method(discountElem.getText().trim()).replaceAll(",", "."));
+                        double precioDescuento = Double.parseDouble(method(precioElem.getText().trim()).replaceAll(",", "."));
+                        double descuento = precioReal - precioDescuento;
+                        row[4] = "" + round(descuento, 2) + "€";
+                    } else {
+                        row[4] = "x";
+                    }
+
+                    model.addRow(row);
+                    count++;
+                }
+            } else {
+                row[0] = "x";
+                row[1] = "x";
+                row[2] = "x";
+                row[3] = "x";
+                row[4] = "x";
+                model.addRow(row);
             }
         }
     }
