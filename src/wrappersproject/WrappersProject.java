@@ -13,26 +13,36 @@ import org.openqa.selenium.firefox.FirefoxDriver;
  * @author yevbes
  */
 public class WrappersProject {
+
+    private WebDriver driver= null;
     
-    private static WebDriver driver= null;
+        /**
+     * @return the driver
+     */
+    public WebDriver getDriver() {
+        return driver;
+    }
+
+    /**
+     * @param aDriver the driver to set
+     */
+    public void setDriver(WebDriver aDriver) {
+        driver = aDriver;
+    }
     
-    public static void Firefox()
+    public WrappersProject(String exepath) {
+        //String exePath = "/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver";
+        System.setProperty("webdriver.gecko.driver", exepath);
+        setDriver(new FirefoxDriver());
+    }
+    
+    /*public void Firefox()
     {
         
         String exePath = "/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver";
         System.setProperty("webdriver.gecko.driver", exePath);
-        driver = new FirefoxDriver();
-        driver.get("http://www.amazon.es");
-        driver.manage().window().maximize();
-    }
-
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        Firefox();
-    }
-    
+        setDriver(new FirefoxDriver());
+        getDriver().get("http://www.amazon.es");
+        getDriver().manage().window().maximize();
+    }   */
 }
