@@ -365,8 +365,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                             driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
                     if (searchBtn != null) {
                         searchBtn.click();
-                        /* Esto falla */
-                        WebElement numOfNav = driver.findElement(By.xpath("/html/body/div[4]/div/div[5]/div[2]/span[2]/ul/li[2]/span"));
+                        WebElement numOfNav = driver.findElement(By.className("pageView"));
                         if (numOfNav != null) {
                             
                             int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
