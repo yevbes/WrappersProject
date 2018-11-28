@@ -284,7 +284,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                 if (searchBtn != null) {
                     searchBtn.click();
                     /* Numero de paginaciónes, hay que conseguir listarlas */
-                    WebElement numOfNav = driver.findElement(By.className("pagnDisabled")); 
+                    WebElement numOfNav = driver.findElement(By.className("pagnDisabled"));
                     if (numOfNav != null) {
                         int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
                         // Para cada página de paginación
@@ -292,18 +292,28 @@ public class WrappersFrame extends javax.swing.JFrame {
                             fetchAmazonBooks(driver, wait); //El método coge la info de los articulos y rellena la tabla                           
                             JavascriptExecutor js = ((JavascriptExecutor) driver);
                             //presence in DOM
-                            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextLink")));
+                            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextString")));
                             //scrolling
                             WebElement element = driver.findElement(By.id("pagnNextLink"));
                             js.executeScript("arguments[0].scrollIntoView(true);", element);
                             //clickable
-                            WebElement nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextLink")));
-                                    //driver.findElement(By.id("//*[@id='pagnNextLink']"));
-                            //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                            if (nextBtn != null && i != numOfNavs-1) {
-                                nextBtn.click();
+                            WebElement nextBtn = null;
+                            try {
+
+                                nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextString")));
+                            } catch (Exception e) {
+
                             }
-                        
+//driver.findElement(By.id("//*[@id='pagnNextLink']"));
+                            //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
+                            if (nextBtn != null) {
+                                try {
+                                    nextBtn.click();
+                                } catch (Exception e) {
+
+                                }
+                            }
+
                         }
                     }
                 }
