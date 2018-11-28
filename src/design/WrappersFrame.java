@@ -292,13 +292,14 @@ public class WrappersFrame extends javax.swing.JFrame {
                             fetchAmazonBooks(driver, wait); //El método coge la info de los articulos y rellena la tabla                           
                             JavascriptExecutor js = ((JavascriptExecutor) driver);
                             //presence in DOM
-                            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextString")));
-                            //scrolling
-                            WebElement element = driver.findElement(By.id("pagnNextLink"));
-                            js.executeScript("arguments[0].scrollIntoView(true);", element);
-                            //clickable
                             WebElement nextBtn = null;
                             try {
+                                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextString")));
+                                //scrolling
+
+                                WebElement element = driver.findElement(By.id("pagnNextString"));
+                                js.executeScript("arguments[0].scrollIntoView(true);", element);
+                                //clickable
 
                                 nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextString")));
                             } catch (Exception e) {
@@ -364,8 +365,41 @@ public class WrappersFrame extends javax.swing.JFrame {
                             driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
                     if (searchBtn != null) {
                         searchBtn.click();
+                        /* Esto falla */
+                        WebElement numOfNav = driver.findElement(By.xpath("/html/body/div[4]/div/div[5]/div[2]/span[2]/ul/li[2]/span"));
+                        if (numOfNav != null) {
+                            
+                            int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
+                            // Para cada página de paginación
+                            for (int i = 0; i < numOfNavs; i++) {
+                                fetchFnackBooks(driver, wait);  //El método coge la info de los articulos y rellena la tabla                           
+                                JavascriptExecutor js = ((JavascriptExecutor) driver);
+                                //presence in DOM
+                                WebElement nextBtn = null;
+                                try {
+                                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]")));
+                                    //scrolling
 
-                        fetchFnackBooks(driver, wait);
+                                    WebElement element = driver.findElement(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]"));
+                                    js.executeScript("arguments[0].scrollIntoView(true);", element);
+                                    //clickable
+
+                                    nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]")));
+                                } catch (Exception e) {
+
+                                }
+//driver.findElement(By.id("//*[@id='pagnNextLink']"));
+                                //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
+                                if (nextBtn != null) {
+                                    try {
+                                        nextBtn.click();
+                                    } catch (Exception e) {
+
+                                    }
+                                }
+
+                            }
+                        }
 
                     }
                 }
