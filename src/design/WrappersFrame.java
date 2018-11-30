@@ -365,7 +365,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                             driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
                     if (searchBtn != null) {
                         searchBtn.click();
-                        WebElement numOfNav = driver.findElement(By.className("pageView"));
+                        WebElement numOfNav = driver.findElement(By.className("pageView")); 
                         if (numOfNav != null) {
                             
                             int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
@@ -376,14 +376,9 @@ public class WrappersFrame extends javax.swing.JFrame {
                                 //presence in DOM
                                 WebElement nextBtn = null;
                                 try {
-                                    wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]")));
-                                    //scrolling
-
-                                    WebElement element = driver.findElement(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]"));
-                                    js.executeScript("arguments[0].scrollIntoView(true);", element);
-                                    //clickable
-
-                                    nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[4]/div/div[4]/div[2]/span[2]/ul/li[3]")));
+                                    String li = //"/html/body/div[4]/div/div[11]/div/div[2]/ul/li[5]";
+                                            "actionNext";
+                                    nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.className(li)));
                                 } catch (Exception e) {
 
                                 }
