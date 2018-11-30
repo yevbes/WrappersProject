@@ -293,7 +293,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                         int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
                         // Para cada página de paginación
                         for (int i = 0; i < numOfNavs; i++) {
-                            fetchAmazonBooks(driver, wait); //El método coge la info de los articulos y rellena la tabla                           
+                            fetchAmazonBooks(driver); //El método coge la info de los articulos y rellena la tabla                           
                             JavascriptExecutor js = ((JavascriptExecutor) driver);
                             //presence in DOM
                             WebElement nextBtn = null;
@@ -370,12 +370,13 @@ public class WrappersFrame extends javax.swing.JFrame {
                     if (searchBtn != null) {
                         searchBtn.click();
                         WebElement numOfNav = driver.findElement(By.className("pageView"));
+             
                         if (numOfNav != null) {
 
                             int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
                             // Para cada página de paginación
                             for (int i = 0; i < numOfNavs; i++) {
-                                fetchFnackBooks(driver, wait);  //El método coge la info de los articulos y rellena la tabla                           
+                                fetchFnackBooks(driver);  //El método coge la info de los articulos y rellena la tabla                           
                                 //presence in DOM
                                 WebElement nextBtn = null;
                                 try {
@@ -405,8 +406,9 @@ public class WrappersFrame extends javax.swing.JFrame {
         }
     }
 
-    private void fetchAmazonBooks(WebDriver driver, WebDriverWait wait) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+    private void fetchAmazonBooks(WebDriver driver) {
+        WebDriverWait wait_aux = new WebDriverWait(driver, 10); 
+        wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
         List<WebElement> listaLibros = driver.findElements(By.className("s-item-container"));
 
         if (listaLibros != null) {
@@ -469,11 +471,12 @@ public class WrappersFrame extends javax.swing.JFrame {
         }
     }
 
-    private void fetchFnackBooks(WebDriver driver, WebDriverWait wait) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
+    private void fetchFnackBooks(WebDriver driver) {
+        WebDriverWait wait_aux = new WebDriverWait(driver, 10); 
+        wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
         List<WebElement> listaLibros
                 = //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("Article-item")));
-                driver.findElements(By.className("Article-item"));
+                driver.findElements(By.xpath("/html/body/div[4]/div/div[6]/ul/li"));
         if (listaLibros != null) {
             WebElement tituloElem, autorElem, precioElem, discountElem;
             Object[] row = new Object[5];
@@ -485,23 +488,26 @@ public class WrappersFrame extends javax.swing.JFrame {
                 for (int i = 0; i < listaLibros.size(); i++) {
 
                     try {
-                        tituloElem = listaLibros.get(i).//findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
-                                findElement(By.className("js-minifa-title"));
+                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                                //findElement(By.className("js-minifa-title"));
                     } catch (Exception e) {
                         tituloElem = null;
                     }
                     try {
-                        autorElem = listaLibros.get(i).findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
+                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
+                                //.findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
                     } catch (Exception e) {
                         autorElem = null;
                     }
                     try {
-                        precioElem = listaLibros.get(i).findElement(By.className("userPrice"));
+                        precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/a"));
+                                //.findElement(By.className("userPrice"));
                     } catch (Exception e) {
                         precioElem = null;
                     }
                     try {
-                        discountElem = listaLibros.get(i).findElement(By.className("oldPrice"));
+                        discountElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/span"));
+                                //.findElement(By.className("oldPrice"));
                     } catch (Exception e) {
                         discountElem = null;
                     }
@@ -526,7 +532,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                         row[3] = "x";
                     }
 
-                    if (discountElem != null) {
+                    if (discountElem != null && precioElem != null) {
                         double precioReal = Double.parseDouble(method(discountElem.getText().trim()).replaceAll(",", "."));
                         double precioDescuento = Double.parseDouble(method(precioElem.getText().trim()).replaceAll(",", "."));
                         double descuento = precioReal - precioDescuento;
