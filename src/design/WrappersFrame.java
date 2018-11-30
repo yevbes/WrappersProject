@@ -14,6 +14,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import wrappersproject.WrappersProject;
 
@@ -273,10 +274,13 @@ public class WrappersFrame extends javax.swing.JFrame {
         // Si no existe el libro, 1a fila todo x
         driver.get("http://www.amazon.es");
         driver.manage().window().maximize();
+
         // searchDropdownBox
-        WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[1]/div/select/option[25]"));
+        Select searchDropdownBox = new Select(driver.findElement(By.id("searchDropdownBox")));;
         if (searchDropdownBox != null) {
-            searchDropdownBox.click();
+            searchDropdownBox.selectByValue("search-alias=stripbooks");
+           
+            //searchDropdownBox.click();
             WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
             if (searchInput != null) {
                 searchInput.sendKeys(titulo + " " + autor);
@@ -346,7 +350,7 @@ public class WrappersFrame extends javax.swing.JFrame {
         driver.get("http://www.fnac.es/");
         driver.manage().window().maximize();
 
-        WebElement searchDropdownBox = driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[1]/div/a"));
+        WebElement searchDropdownBox = driver.findElement(By.className("Header__aisle-list"));
         if (searchDropdownBox != null) {
             searchDropdownBox.click();
 
@@ -362,23 +366,23 @@ public class WrappersFrame extends javax.swing.JFrame {
                     searchInput.sendKeys(titulo + " " + autor);
                     WebElement searchBtn
                             = //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button")));
-                            driver.findElement(By.xpath("/html/body/div[2]/header/div[2]/div[1]/form/div[2]/div/button"));
+                            driver.findElement(By.className("Header__search-submit"));
                     if (searchBtn != null) {
                         searchBtn.click();
-                        WebElement numOfNav = driver.findElement(By.className("pageView")); 
+                        WebElement numOfNav = driver.findElement(By.className("pageView"));
                         if (numOfNav != null) {
-                            
+
                             int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
                             // Para cada página de paginación
                             for (int i = 0; i < numOfNavs; i++) {
                                 fetchFnackBooks(driver, wait);  //El método coge la info de los articulos y rellena la tabla                           
-                                JavascriptExecutor js = ((JavascriptExecutor) driver);
                                 //presence in DOM
                                 WebElement nextBtn = null;
                                 try {
-                                    String li = //"/html/body/div[4]/div/div[11]/div/div[2]/ul/li[5]";
-                                            "actionNext";
-                                    nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.className(li)));
+                                    String li
+                                            = //"/html/body/div[4]/div/div[11]/div/div[2]/ul/li[5]";
+                                            "nextLevel1";
+                                    nextBtn = driver.findElement(By.className(li));
                                 } catch (Exception e) {
 
                                 }
@@ -403,7 +407,7 @@ public class WrappersFrame extends javax.swing.JFrame {
 
     private void fetchAmazonBooks(WebDriver driver, WebDriverWait wait) {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
-        List<WebElement> listaLibros = driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li"));
+        List<WebElement> listaLibros = driver.findElements(By.className("s-item-container"));
 
         if (listaLibros != null) {
             WebElement tituloElem, autorElem, precioElem;
