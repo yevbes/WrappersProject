@@ -289,39 +289,51 @@ public class WrappersFrame extends javax.swing.JFrame {
                 if (searchBtn != null) {
                     searchBtn.click();
                     /* Numero de paginaciónes, hay que conseguir listarlas */
-                    WebElement numOfNav = driver.findElement(By.className("pagnDisabled"));
-                    if (numOfNav != null) {
-                        int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
-                        // Para cada página de paginación
-                        for (int i = 0; i < numOfNavs; i++) {
-                            fetchAmazonBooks(driver); //El método coge la info de los articulos y rellena la tabla                           
-                            JavascriptExecutor js = ((JavascriptExecutor) driver);
-                            //presence in DOM
-                            WebElement nextBtn = null;
-                            try {
-                                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextString")));
-                                //scrolling
-
-                                WebElement element = driver.findElement(By.id("pagnNextString"));
-                                js.executeScript("arguments[0].scrollIntoView(true);", element);
-                                //clickable
-
-                                nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextString")));
-                            } catch (Exception e) {
-
-                            }
-//driver.findElement(By.id("//*[@id='pagnNextLink']"));
-                            //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                            if (nextBtn != null) {
+                    try {
+                        WebElement numOfNav = driver.findElement(By.className("pagnDisabled"));
+                        if (numOfNav != null) {
+                            int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
+                            // Para cada página de paginación
+                            for (int i = 0; i < numOfNavs; i++) {
+                                fetchAmazonBooks(driver); //El método coge la info de los articulos y rellena la tabla                           
+                                JavascriptExecutor js = ((JavascriptExecutor) driver);
+                                //presence in DOM
+                                WebElement nextBtn = null;
                                 try {
-                                    nextBtn.click();
-                                    waitForPageLoaded(driver);
+                                    wait.until(ExpectedConditions.presenceOfElementLocated(By.id("pagnNextString")));
+                                    //scrolling
+
+                                    WebElement element = driver.findElement(By.id("pagnNextString"));
+                                    js.executeScript("arguments[0].scrollIntoView(true);", element);
+                                    //clickable
+
+                                    nextBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("pagnNextString")));
                                 } catch (Exception e) {
 
                                 }
-                            }
+//driver.findElement(By.id("//*[@id='pagnNextLink']"));
+                                //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
+                                if (nextBtn != null) {
+                                    try {
+                                        nextBtn.click();
+                                        waitForPageLoaded(driver);
+                                    } catch (Exception e) {
 
+                                    }
+                                }
+
+                            }
                         }
+                    } catch (Exception e) {
+                        Object[] row = new Object[5];
+                        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                        row[0] = "x";
+                        row[1] = "x";
+                        row[2] = "x";
+                        row[3] = "x";
+                        row[4] = "x";
+                        model.addRow(row);
                     }
                 }
             }
@@ -371,38 +383,50 @@ public class WrappersFrame extends javax.swing.JFrame {
                             driver.findElement(By.className("Header__search-submit"));
                     if (searchBtn != null) {
                         searchBtn.click();
-                        WebElement numOfNav = driver.findElement(By.className("pageView"));
+                        try {
 
-                        if (numOfNav != null) {
+                            WebElement numOfNav = driver.findElement(By.className("pageView"));
 
-                            int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
-                            // Para cada página de paginación
-                            for (int i = 0; i < numOfNavs; i++) {
-                                fetchFnackBooks(driver);  //El método coge la info de los articulos y rellena la tabla                           
-                                //presence in DOM
-                                WebElement nextBtn = null;
-                                try {
-                                    String li
-                                            = //"/html/body/div[4]/div/div[11]/div/div[2]/ul/li[5]";
-                                            "nextLevel1";
-                                    nextBtn = driver.findElement(By.className(li));
-                                } catch (Exception e) {
+                            if (numOfNav != null) {
 
-                                }
-//driver.findElement(By.id("//*[@id='pagnNextLink']"));
-                                //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                                if (nextBtn != null) {
+                                int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
+                                // Para cada página de paginación
+                                for (int i = 0; i < numOfNavs; i++) {
+                                    fetchFnackBooks(driver);  //El método coge la info de los articulos y rellena la tabla                           
+                                    //presence in DOM
+                                    WebElement nextBtn = null;
                                     try {
-                                        nextBtn.click();
-                                        waitForPageLoaded(driver);
+                                        String li
+                                                = //"/html/body/div[4]/div/div[11]/div/div[2]/ul/li[5]";
+                                                "nextLevel1";
+                                        nextBtn = driver.findElement(By.className(li));
                                     } catch (Exception e) {
 
                                     }
+//driver.findElement(By.id("//*[@id='pagnNextLink']"));
+                                    //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
+                                    if (nextBtn != null) {
+                                        try {
+                                            nextBtn.click();
+                                            waitForPageLoaded(driver);
+                                        } catch (Exception e) {
+
+                                        }
+                                    }
+
                                 }
-
                             }
-                        }
+                        } catch (Exception e) {
+                            Object[] row = new Object[5];
+                            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
 
+                            row[0] = "x";
+                            row[1] = "x";
+                            row[2] = "x";
+                            row[3] = "x";
+                            row[4] = "x";
+                            model.addRow(row);
+                        }
                     }
                 }
             }
@@ -422,7 +446,7 @@ public class WrappersFrame extends javax.swing.JFrame {
             if (!listaLibros.isEmpty()) {
                 int count = 1;
 
-                for (int i = 0; i < listaLibros.size(); i++) {
+                for (int i = 0; i < listaLibros.size() - 1; i++) {
                     try {
                         tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
                     } catch (Exception e) {
