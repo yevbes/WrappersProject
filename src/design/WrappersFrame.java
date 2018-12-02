@@ -13,6 +13,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -279,7 +280,7 @@ public class WrappersFrame extends javax.swing.JFrame {
         Select searchDropdownBox = new Select(driver.findElement(By.id("searchDropdownBox")));;
         if (searchDropdownBox != null) {
             searchDropdownBox.selectByValue("search-alias=stripbooks");
-           
+
             //searchDropdownBox.click();
             WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
             if (searchInput != null) {
@@ -314,6 +315,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                             if (nextBtn != null) {
                                 try {
                                     nextBtn.click();
+                                    waitForPageLoaded(driver);
                                 } catch (Exception e) {
 
                                 }
@@ -370,7 +372,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                     if (searchBtn != null) {
                         searchBtn.click();
                         WebElement numOfNav = driver.findElement(By.className("pageView"));
-             
+
                         if (numOfNav != null) {
 
                             int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
@@ -392,6 +394,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                                 if (nextBtn != null) {
                                     try {
                                         nextBtn.click();
+                                        waitForPageLoaded(driver);
                                     } catch (Exception e) {
 
                                     }
@@ -407,7 +410,7 @@ public class WrappersFrame extends javax.swing.JFrame {
     }
 
     private void fetchAmazonBooks(WebDriver driver) {
-        WebDriverWait wait_aux = new WebDriverWait(driver, 10); 
+        WebDriverWait wait_aux = new WebDriverWait(driver, 10);
         wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
         List<WebElement> listaLibros = driver.findElements(By.className("s-item-container"));
 
@@ -472,7 +475,7 @@ public class WrappersFrame extends javax.swing.JFrame {
     }
 
     private void fetchFnackBooks(WebDriver driver) {
-        WebDriverWait wait_aux = new WebDriverWait(driver, 10); 
+        WebDriverWait wait_aux = new WebDriverWait(driver, 10);
         wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
         List<WebElement> listaLibros
                 = //wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("Article-item")));
@@ -489,25 +492,25 @@ public class WrappersFrame extends javax.swing.JFrame {
 
                     try {
                         tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
-                                //findElement(By.className("js-minifa-title"));
+                        //findElement(By.className("js-minifa-title"));
                     } catch (Exception e) {
                         tituloElem = null;
                     }
                     try {
                         autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
-                                //.findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
+                        //.findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
                     } catch (Exception e) {
                         autorElem = null;
                     }
                     try {
                         precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/a"));
-                                //.findElement(By.className("userPrice"));
+                        //.findElement(By.className("userPrice"));
                     } catch (Exception e) {
                         precioElem = null;
                     }
                     try {
                         discountElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/span"));
-                                //.findElement(By.className("oldPrice"));
+                        //.findElement(By.className("oldPrice"));
                     } catch (Exception e) {
                         discountElem = null;
                     }
@@ -552,6 +555,21 @@ public class WrappersFrame extends javax.swing.JFrame {
                 row[4] = "x";
                 model.addRow(row);
             }
+        }
+    }
+
+    public void waitForPageLoaded(WebDriver driver) {
+        ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
+            }
+        };
+        try {
+            Thread.sleep(1000);
+            WebDriverWait wait = new WebDriverWait(driver, 30);
+            wait.until(expectation);
+        } catch (Throwable error) {
+            System.out.println("Timeout waiting for Page Load Request to complete.");
         }
     }
 }
