@@ -33,7 +33,9 @@ public class WrappersFrame extends javax.swing.JFrame {
      */
     public WrappersFrame() {
         initComponents();
-        wp = new WrappersProject("/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver");
+        //wp = new WrappersProject("/home/yevbes/NetBeansProjects/WrappersProject/geckodriver/geckodriver");
+        wp = new WrappersProject("C:/Users/alex_/Documents/NetBeansProjects/WrappersProject/geckodriver/geckodriver.exe");
+
     }
 
     /**
@@ -515,21 +517,32 @@ public class WrappersFrame extends javax.swing.JFrame {
                 for (int i = 0; i < listaLibros.size(); i++) {
 
                     try {
-                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a[1]"));
+                        tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]"));
                         //findElement(By.className("js-minifa-title"));
                     } catch (Exception e) {
-                        tituloElem = null;
+                        try {
+                            tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[1]/a"));
+                        } catch (Exception e2) {
+                            tituloElem = null;
+                        }
+
                     }
                     try {
-                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
+                        autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]"));
                         //.findElement(By.className("Article-descSub")).findElement(By.tagName("a"));
                     } catch (Exception e) {
-                        autorElem = null;
+                        try {
+                            autorElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[2]/div/p[2]/a"));
+                        } catch (Exception e2) {
+                            autorElem = null;
+                        }
                     }
+
                     try {
                         precioElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[4]/div/div[6]/ul/li[" + count + "]/div/div[3]/div/div[2]/div/div[1]/a"));
                         //.findElement(By.className("userPrice"));
                     } catch (Exception e) {
+
                         precioElem = null;
                     }
                     try {
