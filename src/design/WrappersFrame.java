@@ -27,6 +27,7 @@ public class WrappersFrame extends javax.swing.JFrame {
 
     private WrappersProject wp;
     private boolean isAmazonChecked = false, isFnacChecked = false;
+    private static final int MAXIMUM = 6;
 
     /**
      * Creates new form WrappersFrame
@@ -296,7 +297,13 @@ public class WrappersFrame extends javax.swing.JFrame {
                         if (numOfNav != null) {
                             int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
                             // Para cada página de paginación
-                            for (int i = 0; i < numOfNavs; i++) {
+                            int aux;
+                                if (numOfNavs >= MAXIMUM) {
+                                    aux = MAXIMUM;
+                                } else {
+                                    aux = numOfNavs;
+                                }
+                            for (int i = 0; i < aux; i++) {
                                 fetchAmazonBooks(driver); //El método coge la info de los articulos y rellena la tabla                           
                                 JavascriptExecutor js = ((JavascriptExecutor) driver);
                                 //presence in DOM
@@ -315,7 +322,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                                 }
 //driver.findElement(By.id("//*[@id='pagnNextLink']"));
                                 //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                                if (nextBtn != null) {
+                                if (nextBtn != null && i != aux-1) {
                                     try {
                                         nextBtn.click();
                                         waitForPageLoaded(driver);
@@ -393,7 +400,13 @@ public class WrappersFrame extends javax.swing.JFrame {
 
                                 int numOfNavs = Integer.parseInt(numOfNav.getText().replace("Página 1 / ", "").trim()); // Total de paginaciónes
                                 // Para cada página de paginación
-                                for (int i = 0; i < numOfNavs; i++) {
+                                int aux;
+                                if (numOfNavs >= MAXIMUM) {
+                                    aux = MAXIMUM;
+                                } else {
+                                    aux = numOfNavs;
+                                }
+                                for (int i = 0; i < aux; i++) {
                                     fetchFnackBooks(driver);  //El método coge la info de los articulos y rellena la tabla                           
                                     //presence in DOM
                                     WebElement nextBtn = null;
@@ -407,7 +420,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                                     }
 //driver.findElement(By.id("//*[@id='pagnNextLink']"));
                                     //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                                    if (nextBtn != null) {
+                                    if (nextBtn != null && i != aux-1) {
                                         try {
                                             nextBtn.click();
                                             waitForPageLoaded(driver);
@@ -447,7 +460,6 @@ public class WrappersFrame extends javax.swing.JFrame {
 
             if (!listaLibros.isEmpty()) {
                 int count = 1;
-
                 for (int i = 0; i < listaLibros.size() - 1; i++) {
                     try {
                         tituloElem = listaLibros.get(i).findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[4]/div[1]/div/ul/li[" + count + "]/div/div/div/div[2]/div[1]/div[1]/a/h2"));
@@ -489,6 +501,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                     model.addRow(row);
                     count++;
                 }
+
             } else {
                 row[0] = "x";
                 row[1] = "x";
@@ -513,7 +526,6 @@ public class WrappersFrame extends javax.swing.JFrame {
 
             if (!listaLibros.isEmpty()) {
                 int count = 1;
-
                 for (int i = 0; i < listaLibros.size(); i++) {
 
                     try {
