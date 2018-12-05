@@ -27,6 +27,8 @@ public class WrappersFrame extends javax.swing.JFrame {
 
     private WrappersProject wp;
     private boolean isAmazonChecked = false, isFnacChecked = false;
+    
+    //Número de páginas a mostrar en la tabla
     private static final int MAXIMUM = 6;
 
     /**
@@ -273,6 +275,7 @@ public class WrappersFrame extends javax.swing.JFrame {
         dm.setRowCount(0);
     }
 
+    //Búsqueda de datos en AMAZON
     private void amazonSearch(WebDriver driver, String autor, String titulo, WebDriverWait wait) {
         // Sitio de búsqueda, el titulo, nombre autor, precio, descuento si existe
         // Si no existe el libro, 1a fila todo x
@@ -283,14 +286,24 @@ public class WrappersFrame extends javax.swing.JFrame {
         Select searchDropdownBox = new Select(driver.findElement(By.id("searchDropdownBox")));;
         if (searchDropdownBox != null) {
             searchDropdownBox.selectByValue("search-alias=stripbooks");
-
             //searchDropdownBox.click();
-            WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
-            if (searchInput != null) {
-                searchInput.sendKeys(titulo + " " + autor);
-                WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
-                if (searchBtn != null) {
-                    searchBtn.click();
+            //WebElement searchInput = driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]"));
+            //if (searchInput != null) {
+            //searchInput.sendKeys(titulo );//+ " " + autor
+            WebElement searchBtn = driver.findElement(By.xpath("/html/body/div[1]/header/div/div[1]/div[3]/div/form/div[2]/div/input"));
+            if (searchBtn != null) {
+                searchBtn.click();
+                WebElement advancedButton = driver.findElement(By.xpath("/html/body/div[2]/header/div/div[4]/a[3]/span"));
+                if (advancedButton != null) {
+                    advancedButton.click();
+                    
+                    WebElement autorTF = driver.findElement(By.xpath("/html/body/div[2]/div[4]/table/tbody/tr/td/table/tbody/tr/td[1]/form/table/tbody/tr[1]/td[1]/div[2]/input\n" + ""));
+                    WebElement tituloTF = driver.findElement(By.xpath("/html/body/div[2]/div[4]/table/tbody/tr/td/table/tbody/tr/td[1]/form/table/tbody/tr[1]/td[1]/div[3]/input"));
+                    autorTF.sendKeys(autor);
+                    tituloTF.sendKeys(titulo);
+                    
+                    WebElement buscarYa = driver.findElement(By.xpath("/html/body/div[2]/div[4]/table/tbody/tr/td/table/tbody/tr/td[1]/form/table/tbody/tr[2]/td/input"));
+                    buscarYa.click();
                     /* Numero de paginaciónes, hay que conseguir listarlas */
                     try {
                         WebElement numOfNav = driver.findElement(By.className("pagnDisabled"));
@@ -298,11 +311,11 @@ public class WrappersFrame extends javax.swing.JFrame {
                             int numOfNavs = Integer.parseInt(numOfNav.getText()); // Total de paginaciónes
                             // Para cada página de paginación
                             int aux;
-                                if (numOfNavs >= MAXIMUM) {
-                                    aux = MAXIMUM;
-                                } else {
-                                    aux = numOfNavs;
-                                }
+                            if (numOfNavs >= MAXIMUM) {
+                                aux = MAXIMUM;
+                            } else {
+                                aux = numOfNavs;
+                            }
                             for (int i = 0; i < aux; i++) {
                                 fetchAmazonBooks(driver); //El método coge la info de los articulos y rellena la tabla                           
                                 JavascriptExecutor js = ((JavascriptExecutor) driver);
@@ -320,9 +333,8 @@ public class WrappersFrame extends javax.swing.JFrame {
                                 } catch (Exception e) {
 
                                 }
-//driver.findElement(By.id("//*[@id='pagnNextLink']"));
-                                //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                                if (nextBtn != null && i != aux-1) {
+                                //Para que imprima las X primeras páginas.
+                                if (nextBtn != null && i != aux - 1) {
                                     try {
                                         nextBtn.click();
                                         waitForPageLoaded(driver);
@@ -346,6 +358,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                     }
                 }
             }
+
         }
 
     }
@@ -369,6 +382,7 @@ public class WrappersFrame extends javax.swing.JFrame {
         return bd.doubleValue();
     }
 
+    //Búsqueda de datos en FNAC
     private void fnacSearch(WebDriver driver, String autor, String titulo, WebDriverWait wait) {
         driver.get("http://www.fnac.es/");
         driver.manage().window().maximize();
@@ -420,7 +434,7 @@ public class WrappersFrame extends javax.swing.JFrame {
                                     }
 //driver.findElement(By.id("//*[@id='pagnNextLink']"));
                                     //WebElement nextBtn = driver.findElement(By.xpath("/html/body/div[1]/div[2]/div/div[3]/div[2]/div/div[5]/div/div/span["+6+"]/a"));
-                                    if (nextBtn != null && i != aux-1) {
+                                    if (nextBtn != null && i != aux - 1) {
                                         try {
                                             nextBtn.click();
                                             waitForPageLoaded(driver);
@@ -447,7 +461,7 @@ public class WrappersFrame extends javax.swing.JFrame {
             }
         }
     }
-
+    //Escribe los datos en la tabla para Amazon
     private void fetchAmazonBooks(WebDriver driver) {
         WebDriverWait wait_aux = new WebDriverWait(driver, 10);
         wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
@@ -512,7 +526,8 @@ public class WrappersFrame extends javax.swing.JFrame {
             }
         }
     }
-
+    
+    //Escribe los datos en la tabla para Fnac
     private void fetchFnackBooks(WebDriver driver) {
         WebDriverWait wait_aux = new WebDriverWait(driver, 10);
         wait_aux.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html")));
@@ -606,7 +621,7 @@ public class WrappersFrame extends javax.swing.JFrame {
             }
         }
     }
-
+    
     public void waitForPageLoaded(WebDriver driver) {
         ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
